@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import type { Map, Marker, DivIcon } from 'leaflet'
 
 interface FarmerPin {
   id: string
@@ -7,6 +8,13 @@ interface FarmerPin {
   lat: number
   lng: number
   produce: string[]
+}
+
+// Extend Window interface for the global click handler
+declare global {
+  interface Window {
+    __goteraClick?: (id: string) => void
+  }
 }
 
 // Inject Leaflet CSS via CDN (avoids Next.js module resolution issues)
@@ -25,7 +33,7 @@ function injectLeafletCSS() {
 
 export default function GoteraMap({ farmers, onFarmerClick }: { farmers: FarmerPin[], onFarmerClick?: (id: string) => void }) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstance = useRef<any>(null)
+  const mapInstance = useRef<Map | null>(null)
   const [mapError, setMapError] = useState<string | null>(null)
 
   useEffect(() => {
@@ -45,15 +53,15 @@ export default function GoteraMap({ farmers, onFarmerClick }: { farmers: FarmerP
           attribution: '&copy; OpenStreetMap contributors'
         }).addTo(mapInstance.current)
 
-        const icon = L.divIcon({
+        const icon: DivIcon = L.divIcon({
           html: `<div style="background:#D4A017;width:14px;height:14px;border-radius:50%;border:2px solid #8B4513;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>`,
           className: '',
           iconSize: [18, 18],
         })
 
         farmers.forEach(f => {
-          L.marker([f.lat, f.lng], { icon })
-            .addTo(mapInstance.current)
+          const marker = L.marker([f.lat, f.lng], { icon })
+            .addTo(mapInstance.current!)
             .bindPopup(`
               <div style="font-family:sans-serif;min-width:140px">
                 <strong style="color:#8B4513">${f.name}</strong><br/>
@@ -67,7 +75,7 @@ export default function GoteraMap({ farmers, onFarmerClick }: { farmers: FarmerP
         })
 
         if (onFarmerClick) {
-          (window as any).__goteraClick = onFarmerClick
+          window.__goteraClick = onFarmerClick
         }
       } catch (err) {
         console.error('[GoteraMap] Failed to initialize map:', err)
