@@ -83,7 +83,7 @@ export async function HomePage() {
       <AuthAwareHeader />
 
       <main>
-        <section className="relative overflow-hidden">
+        <section className="relative z-0 overflow-hidden">
           <div className="absolute inset-0">
             <Image
               src="https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"

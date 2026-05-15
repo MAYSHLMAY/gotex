@@ -58,7 +58,6 @@ export function AuthAwareHeader() {
 
   const isNavigating = isPending || navigatingTo !== null;
 
-  // Reset navigating state when transition completes
   if (!isPending && navigatingTo) {
     setNavigatingTo(null);
   }
@@ -67,8 +66,9 @@ export function AuthAwareHeader() {
   const dashboardPath = user?.role ? roleHomePath(user.role) : "/";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md overflow-visible">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 relative">
+    // Added overflow-visible explicitly and a set height via the inner container
+    <header className="sticky top-0 z-[999] border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md overflow-visible">
+      <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6 relative">
         <Link 
           href="/" 
           className="flex items-center gap-3 active:scale-[0.98] transition-transform" 
@@ -111,51 +111,54 @@ export function AuthAwareHeader() {
               {showUserMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                  <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--gotera-earth)]/10 bg-white py-2 shadow-lg overflow-y-auto max-h-[calc(100vh-80px)]">
+                  {/* Fixed positioning logic: used top-[calc(100%+0.5rem)] and increased z-index */}
+                  <div className="absolute right-0 top-[calc(100%+0.5rem)] z-[100] w-56 rounded-xl border border-[var(--gotera-earth)]/10 bg-white py-2 shadow-xl ring-1 ring-black ring-opacity-5 overflow-hidden">
                     <div className="border-b border-[var(--gotera-earth)]/10 px-4 py-2">
                       <p className="text-sm font-semibold text-[var(--gotera-bark)]">{user.name}</p>
                       <p className="text-xs text-[var(--gotera-earth)]">{user.role}</p>
                     </div>
                     
-                    <button
-                      onClick={() => {
-                        setShowUserMenu(false);
-                        handleNavigation(dashboardPath);
-                      }}
-                      disabled={isNavigating}
-                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)] disabled:opacity-50"
-                    >
-                      {navigatingTo === dashboardPath ? <Spinner /> : (
+                    <div className="max-h-[60vh] overflow-y-auto">
+                      <button
+                        onClick={() => {
+                          setShowUserMenu(false);
+                          handleNavigation(dashboardPath);
+                        }}
+                        disabled={isNavigating}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)] disabled:opacity-50"
+                      >
+                        {navigatingTo === dashboardPath ? <Spinner /> : (
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                          </svg>
+                        )}
+                        Dashboard
+                      </button>
+                      
+                      <Link
+                        href="/notifications"
+                        onClick={() => setShowUserMenu(false)}
+                        prefetch={true}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)]"
+                      >
                         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                         </svg>
-                      )}
-                      Dashboard
-                    </button>
-                    
-                    <Link
-                      href="/notifications"
-                      onClick={() => setShowUserMenu(false)}
-                      prefetch={true}
-                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)]"
-                    >
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                      </svg>
-                      Notifications
-                    </Link>
-                    
-                    <Link
-                      href="/messages"
-                      onClick={() => setShowUserMenu(false)}
-                      prefetch={true}
-                      className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)]"
-                    >
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                      </svg>
-                      Messages
-                    </Link>
+                        Notifications
+                      </Link>
+                      
+                      <Link
+                        href="/messages"
+                        onClick={() => setShowUserMenu(false)}
+                        prefetch={true}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm font-medium text-[var(--gotera-bark)] transition-colors hover:bg-[var(--gotera-mist)]"
+                      >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                        Messages
+                      </Link>
+                    </div>
                     
                     <div className="border-t border-[var(--gotera-earth)]/10 mt-1 pt-1">
                       <button
