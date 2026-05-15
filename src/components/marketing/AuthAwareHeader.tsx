@@ -67,8 +67,8 @@ export function AuthAwareHeader() {
   const dashboardPath = user?.role ? roleHomePath(user.role) : "/";
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md overflow-visible">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6 relative">
         <Link 
           href="/" 
           className="flex items-center gap-3 active:scale-[0.98] transition-transform" 
@@ -111,7 +111,7 @@ export function AuthAwareHeader() {
               {showUserMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowUserMenu(false)} />
-                  <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--gotera-earth)]/10 bg-white py-2 shadow-lg">
+                  <div className="absolute right-0 top-full z-50 mt-2 w-56 rounded-xl border border-[var(--gotera-earth)]/10 bg-white py-2 shadow-lg overflow-y-auto max-h-[calc(100vh-80px)]">
                     <div className="border-b border-[var(--gotera-earth)]/10 px-4 py-2">
                       <p className="text-sm font-semibold text-[var(--gotera-bark)]">{user.name}</p>
                       <p className="text-xs text-[var(--gotera-earth)]">{user.role}</p>
