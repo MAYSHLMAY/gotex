@@ -34,6 +34,19 @@ const buyerSchema = z.object({
   procurementFreq: z.enum(["daily", "weekly", "monthly"]).optional(),
 });
 
+const driverSchema = z.object({
+  role: z.literal("DRIVER"),
+  nameEn: z.string().min(2),
+  nameAm: z.string().optional(),
+  phone: z.string().min(8),
+  email: z.string().email().optional().or(z.literal("")),
+  password: z.string().min(8),
+  vehicleType: z.enum(["motorcycle", "pickup", "truck", "refrigerated_truck"]),
+  plateNumber: z.string().min(4),
+  capacityKg: z.number().positive(),
+  refrigerated: z.boolean().default(false),
+});
+
 export async function POST(req: Request) {
   try {
     const json = await req.json();
@@ -100,6 +113,40 @@ export async function POST(req: Request) {
             businessType: data.businessType,
             deliveryAddress: data.deliveryAddress,
             procurementFreq: data.procurementFreq,
+          },
+        });
+      });
+      return NextResponse.json({ ok: true });
+    }
+
+    if (role === "DRIVER") {
+      const data = driverSchema.parse(json);
+      const exists = await prisma.user.findUnique({ where: { phone: data.phone } });
+      if (exists) return NextResponse.json({ error: "Phone already registered" }, { status: 409 });
+
+      const passwordHash = await bcrypt.hash(data.password, 10);
+      await prisma.$transaction(async (tx) => {
+        const user = await tx.user.create({
+          data: {
+            role: Role.DRIVER,
+            nameEn: data.nameEn,
+            nameAm: data.nameAm,
+            phone: data.phone,
+            email: data.email || null,
+            passwordHash,
+            verified: false,
+          },
+        });
+        await tx.driver.create({
+          data: {
+            userId: user.id,
+            name: data.nameEn,
+            phone: data.phone,
+            vehicleType: data.vehicleType,
+            plateNumber: data.plateNumber,
+            capacityKg: data.capacityKg,
+            refrigerated: data.refrigerated,
+            isAvailable: true,
           },
         });
       });
