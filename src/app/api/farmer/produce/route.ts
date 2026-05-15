@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         grade: body.grade,
         harvestDate: new Date(body.harvestDate),
         freshnessWindow: body.freshnessWindow,
-        imageUrls: body.imageUrls.length ? body.imageUrls : ["/favicon.ico"],
+        imageUrls: body.imageUrls.length ? body.imageUrls : ["/images/produce-placeholder.svg"],
         deliveryOffered: Boolean(body.deliveryOffered),
         deliveryRadiusKm: body.deliveryRadiusKm ?? null,
       },

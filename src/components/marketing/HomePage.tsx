@@ -86,7 +86,7 @@ export async function HomePage() {
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
             <Image
-              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=80"
+              src="https://images.pexels.com/photos/2165688/pexels-photo-2165688.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop"
               alt="Ethiopian highland fields at sunrise"
               fill
               priority

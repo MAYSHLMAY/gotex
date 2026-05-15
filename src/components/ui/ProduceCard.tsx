@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 import type { FeaturedProduce } from "@/types";
 import { TrustScore } from "@/components/ui/TrustScore";
 
@@ -8,19 +11,31 @@ type ProduceCardProps = {
   href?: string;
 };
 
+const PLACEHOLDER = "/images/produce-placeholder.svg";
+
 export function ProduceCard({ item, href = `/buyer/marketplace/${item.id}` }: ProduceCardProps) {
-  const cover = item.imageUrls[0] ?? "/images/produce-placeholder.svg";
+  const [imgSrc, setImgSrc] = useState(item.imageUrls[0] || PLACEHOLDER);
+  const [hasError, setHasError] = useState(false);
+
+  const handleError = () => {
+    if (!hasError) {
+      setHasError(true);
+      setImgSrc(PLACEHOLDER);
+    }
+  };
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-[var(--card-border)] bg-[var(--card-bg)] shadow-[var(--shadow-warm)] transition duration-200 hover:-translate-y-0.5 hover:shadow-lg">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--gotera-mist)]">
         <Image
-          src={cover}
+          src={imgSrc}
           alt={`${item.nameEn} harvest`}
           fill
           className="object-cover transition duration-500 group-hover:scale-[1.03]"
           sizes="(max-width:768px) 100vw, 280px"
           loading="lazy"
+          onError={handleError}
+          unoptimized={imgSrc === PLACEHOLDER}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-transparent" />
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2 py-1 text-[10px] font-semibold uppercase tracking-wide text-[var(--gotera-bark)] shadow-sm">
