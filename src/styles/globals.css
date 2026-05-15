@@ -79,7 +79,7 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold;
     background: linear-gradient(
         180deg,
         rgba(255, 255, 255, 0.12),
@@ -88,6 +88,11 @@ body {
       var(--gotera-gold);
     color: var(--gotera-charcoal);
     box-shadow: 0 4px 0 rgba(92, 51, 23, 0.18), var(--shadow-warm);
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.08s ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
   }
 
   .btn-primary:hover {
@@ -96,31 +101,78 @@ body {
   }
 
   .btn-primary:active {
-    transform: translateY(1px);
-    box-shadow: 0 2px 0 rgba(92, 51, 23, 0.15);
+    transform: translateY(2px) scale(0.98);
+    box-shadow: 0 1px 0 rgba(92, 51, 23, 0.15);
+    background: linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.05),
+        transparent
+      ),
+      var(--gotera-gold);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-2.5 text-sm font-semibold transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-2.5 text-sm font-semibold;
     border-color: var(--gotera-earth);
     color: var(--gotera-bark);
     background: rgba(245, 240, 232, 0.6);
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, background 0.08s ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
   }
 
   .btn-secondary:hover {
-    @apply -translate-y-0.5;
+    transform: translateY(-1px);
     box-shadow: var(--shadow-warm);
+    background: rgba(245, 240, 232, 0.9);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: none;
+    background: rgba(230, 225, 217, 0.9);
+  }
+
+  .btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white;
     background: var(--gotera-red);
     box-shadow: 0 4px 14px rgba(192, 57, 43, 0.35);
+    transition: transform 0.08s ease-out, box-shadow 0.08s ease-out, filter 0.08s ease-out;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    cursor: pointer;
   }
 
   .btn-danger:hover {
-    @apply -translate-y-0.5;
+    transform: translateY(-1px);
     filter: brightness(1.05);
+  }
+
+  .btn-danger:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.3);
+    filter: brightness(0.95);
+  }
+
+  .btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
   }
 
   .section-heading {
@@ -138,6 +190,17 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+/* Shake animation for errors */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
 }
 
 /* Reduced motion */

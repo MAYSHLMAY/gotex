@@ -121,7 +121,8 @@ export async function HomePage() {
               className="object-cover"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#2b1a0d]/92 via-[#3b2415]/78 to-[#2d6a4f]/55" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1a0f06]/95 via-[#2b1a0d]/90 to-[#1d4a35]/80" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1a0f06]/60 via-transparent to-transparent" />
           </div>
           <FloatingProduce />
           <div className="relative mx-auto flex max-w-6xl flex-col gap-10 px-4 py-20 sm:px-6 lg:flex-row lg:items-center lg:py-28">
