@@ -82,7 +82,7 @@ export async function HomePage() {
     <div className="gotera-texture min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <AuthAwareHeader />
 
-      <main>
+      <main style={{ zIndex: 0 }}>
         <section className="relative z-0 overflow-hidden">
           <div className="absolute inset-0">
             <Image

@@ -67,7 +67,7 @@ export function AuthAwareHeader() {
 
   return (
     // Added overflow-visible explicitly and a set height via the inner container
-    <header className="sticky top-0 z-[999] border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md overflow-visible">
+    <header className="absolute top-0 z-[100] border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md overflow-visible">
       <div className="mx-auto flex h-20 max-w-6xl items-center justify-between px-4 sm:px-6 relative">
         <Link 
           href="/" 
