@@ -1,4 +1,4 @@
-import "@/app/globals.css"
+// import "@/app/globals.css"
 
 export const metadata = {
   title: "Driver Portal | Gotera",
