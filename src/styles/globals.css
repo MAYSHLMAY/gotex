@@ -1,0 +1,153 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --gotera-earth: #8b4513;
+  --gotera-gold: #d4a017;
+  --gotera-green: #2d6a4f;
+  --gotera-cream: #f5f0e8;
+  --gotera-red: #c0392b;
+  --gotera-bark: #5c3317;
+  --gotera-mist: #e8f4f0;
+  --gotera-charcoal: #1a1a2e;
+  --gotera-amber: #f0a500;
+
+  --background: var(--gotera-cream);
+  --foreground: var(--gotera-charcoal);
+  --card-bg: var(--gotera-cream);
+  --card-border: rgba(212, 160, 23, 0.35);
+  --shadow-warm: 0 12px 40px rgba(92, 51, 23, 0.12);
+
+  --font-display: var(--font-noto-ethiopic), var(--font-playfair), serif;
+  --font-body: var(--font-dm-sans), system-ui, sans-serif;
+  --font-accent: var(--font-playfair), Georgia, serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: var(--font-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Woven texture overlay (gabi / netela) */
+.gotera-texture {
+  position: relative;
+}
+
+.gotera-texture::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+}
+
+.gotera-texture > * {
+  position: relative;
+  z-index: 1;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-accent {
+  font-family: var(--font-accent);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-all duration-200;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.12),
+        transparent
+      ),
+      var(--gotera-gold);
+    color: var(--gotera-charcoal);
+    box-shadow: 0 4px 0 rgba(92, 51, 23, 0.18), var(--shadow-warm);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 0 rgba(92, 51, 23, 0.2), 0 16px 36px rgba(92, 51, 23, 0.18);
+  }
+
+  .btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 0 rgba(92, 51, 23, 0.15);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border-2 px-5 py-2.5 text-sm font-semibold transition-all duration-200;
+    border-color: var(--gotera-earth);
+    color: var(--gotera-bark);
+    background: rgba(245, 240, 232, 0.6);
+  }
+
+  .btn-secondary:hover {
+    @apply -translate-y-0.5;
+    box-shadow: var(--shadow-warm);
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200;
+    background: var(--gotera-red);
+    box-shadow: 0 4px 14px rgba(192, 57, 43, 0.35);
+  }
+
+  .btn-danger:hover {
+    @apply -translate-y-0.5;
+    filter: brightness(1.05);
+  }
+
+  .section-heading {
+    @apply font-display text-3xl font-semibold tracking-tight sm:text-4xl;
+    color: var(--gotera-bark);
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.2em];
+    color: var(--gotera-earth);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

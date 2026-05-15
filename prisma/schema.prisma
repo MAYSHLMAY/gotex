@@ -1,0 +1,354 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  FARMER
+  BUYER
+  ADMIN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  DISPATCHED
+  DELIVERED
+  CANCELLED
+}
+
+enum RfqStatus {
+  OPEN
+  CLOSED
+  AWARDED
+}
+
+model User {
+  id             String         @id @default(cuid())
+  role           Role
+  nameEn         String
+  nameAm         String?
+  phone          String         @unique
+  email          String?        @unique
+  passwordHash   String
+  verified       Boolean        @default(false)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  farmer         Farmer?
+  buyer          Buyer?
+  messages       Message[]      @relation("SentMessages")
+  notifications  Notification[]
+  disputesOpened Dispute[]      @relation("DisputeOpener")
+}
+
+model Farmer {
+  id              String         @id @default(cuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  region          String
+  woreda          String
+  farmSizeSqm     Float
+  farmTypes       String[]
+  lat             Float
+  lng             Float
+  trustScore      Float          @default(0)
+  cooperativeId   String?
+  cooperative     Cooperative?   @relation(fields: [cooperativeId], references: [id])
+  produce         Produce[]
+  orderItems      OrderItem[]    @relation("FarmerOrderItems")
+  rfqBids         RfqBid[]
+  harvestPlans    HarvestPlan[]
+  favoriteFarmers FavoriteFarmer[] @relation("FarmerFavorites")
+}
+
+model Buyer {
+  id               String                  @id @default(cuid())
+  userId           String                  @unique
+  user             User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businessName     String
+  businessLicense  String?
+  contactPerson    String?
+  city             String
+  businessType     String?
+  deliveryAddress  String?
+  deliveryLat      Float?
+  deliveryLng      Float?
+  procurementFreq  String?
+  orders           Order[]
+  rfqs             Rfq[]
+  templates        ProcurementTemplate[]
+  favoriteFarmers  FavoriteFarmer[]
+}
+
+model Cooperative {
+  id       String   @id @default(cuid())
+  name     String
+  region   String?
+  farmers  Farmer[]
+}
+
+model Produce {
+  id                      String      @id @default(cuid())
+  farmerId                String
+  farmer                  Farmer      @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  nameEn                  String
+  nameAm                  String
+  category                String
+  quantityKg              Float
+  pricePerKg              Float
+  atikiltTeraBaselinePrice Float?
+  minOrderKg              Float
+  grade                   String
+  harvestDate             DateTime
+  freshnessWindow         Int
+  imageUrls               String[]
+  isAvailable             Boolean     @default(true)
+  deliveryOffered         Boolean     @default(false)
+  deliveryRadiusKm        Float?
+  orderItems              OrderItem[]
+  createdAt               DateTime    @default(now())
+  updatedAt               DateTime    @updatedAt
+
+  @@index([isAvailable, category])
+  @@index([farmerId])
+}
+
+model Order {
+  id                     String       @id @default(cuid())
+  buyerId                String
+  buyer                  Buyer        @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  status                 OrderStatus  @default(PENDING)
+  totalAmountETB         Float
+  atikiltTeraBaselineEtb Float?
+  deliveryAddress        String
+  deliveryLat            Float?
+  deliveryLng            Float?
+  notes                  String?
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  items                  OrderItem[]
+  messages               Message[]
+  invoice                Invoice?
+  review                 Review?
+  disputes               Dispute[]
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  orderId     String
+  produceId   String
+  farmerId    String
+  quantityKg  Float
+  pricePerKg  Float
+  status      String  @default("PENDING")
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  produce     Produce @relation(fields: [produceId], references: [id])
+  farmer      Farmer  @relation("FarmerOrderItems", fields: [farmerId], references: [id])
+
+  @@index([orderId])
+  @@index([farmerId])
+}
+
+model Rfq {
+  id           String    @id @default(cuid())
+  buyerId      String
+  buyer        Buyer     @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  produceType  String
+  quantityKg   Float
+  frequency    String
+  durationDays Int
+  deadline     DateTime
+  status       RfqStatus @default(OPEN)
+  bids         RfqBid[]
+  createdAt    DateTime  @default(now())
+}
+
+model RfqBid {
+  id          String   @id @default(cuid())
+  rfqId       String
+  rfq         Rfq      @relation(fields: [rfqId], references: [id], onDelete: Cascade)
+  farmerId    String
+  farmer      Farmer   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  pricePerKg  Float
+  quantityKg  Float
+  message     String?
+  createdAt   DateTime @default(now())
+
+  @@index([rfqId])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User     @relation("SentMessages", fields: [senderId], references: [id])
+  content   String
+  voiceUrl  String?
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  pdfUrl      String?
+  amountETB   Float
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  read      Boolean  @default(false)
+  href      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+}
+
+model Review {
+  id          String   @id @default(cuid())
+  orderId     String   @unique
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  rating      Int
+  comment     String?
+  reviewerId  String
+  farmerId    String
+  createdAt   DateTime @default(now())
+}
+
+model Dispute {
+  id           String   @id @default(cuid())
+  orderId      String
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  openedById   String
+  openedBy     User     @relation("DisputeOpener", fields: [openedById], references: [id])
+  reason       String
+  status       String   @default("OPEN")
+  resolution   String?
+  createdAt    DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model HarvestPlan {
+  id          String   @id @default(cuid())
+  farmerId    String
+  farmer      Farmer   @relation(fields: [farmerId], references: [id], onDelete: Cascade)
+  nameEn      String
+  nameAm      String?
+  quantityKg  Float
+  harvestDate DateTime
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([farmerId])
+}
+
+model ProcurementTemplate {
+  id        String                      @id @default(cuid())
+  buyerId   String
+  buyer     Buyer                       @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  name      String
+  lines     ProcurementTemplateLine[]
+  createdAt DateTime                    @default(now())
+}
+
+model ProcurementTemplateLine {
+  id         String                @id @default(cuid())
+  templateId String
+  template   ProcurementTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  nameEn     String
+  nameAm     String?
+  targetKg   Float
+
+  @@index([templateId])
+}
+
+model PlatformSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model FavoriteFarmer {
+  id        String   @id @default(cuid())
+  buyerId   String
+  farmerId  String
+  buyer     Buyer    @relation(fields: [buyerId], references: [id], onDelete: Cascade)
+  farmer    Farmer   @relation("FarmerFavorites", fields: [farmerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([buyerId, farmerId])
+}
+
+model PriceHistory {
+  id              String   @id @default(cuid())
+  produceName     String
+  goteraPrice     Float
+  atikiltTeraPrice Float
+  recordedAt      DateTime @default(now())
+
+  @@index([produceName, recordedAt])
+}
+
+// ========== LOGISTICS SYSTEM ==========
+
+enum LogisticsStatus {
+  SEARCHING
+  ASSIGNED
+  PICKED_UP
+  DELIVERED
+}
+
+model Driver {
+  id               String              @id @default(cuid())
+  userId           String              @unique
+  name             String
+  phone            String
+  vehicleType      String              // motorcycle, pickup, truck, refrigerated_truck
+  plateNumber      String
+  capacityKg       Float
+  refrigerated     Boolean             @default(false)
+  currentLat       Float?
+  currentLng       Float?
+  isAvailable      Boolean             @default(true)
+  rating           Float               @default(5.0)
+  totalDeliveries  Int                 @default(0)
+  createdAt        DateTime            @default(now())
+  logisticsRequests LogisticsRequest[] @relation("AcceptedDriver")
+
+  @@index([isAvailable])
+}
+
+model LogisticsRequest {
+  id                   String           @id @default(cuid())
+  orderId              String           @unique
+  pickupAddress        String
+  pickupLat            Float
+  pickupLng            Float
+  dropoffAddress       String
+  dropoffLat           Float
+  dropoffLng           Float
+  weightKg             Float
+  requiresRefrigeration Boolean         @default(false)
+  offeredPriceEtb      Float
+  acceptedDriverId     String?
+  acceptedDriver       Driver?          @relation("AcceptedDriver", fields: [acceptedDriverId], references: [id])
+  status               LogisticsStatus  @default(SEARCHING)
+  createdAt            DateTime         @default(now())
+
+  @@index([status])
+}
