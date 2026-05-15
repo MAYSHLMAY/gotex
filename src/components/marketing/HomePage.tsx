@@ -6,6 +6,7 @@ import { ProduceCard } from "@/components/ui/ProduceCard";
 import { GoteraCard } from "@/components/ui/GoteraCard";
 import { TiletDivider } from "@/components/ui/TiletDivider";
 import { FloatingProduce } from "@/components/marketing/FloatingProduce";
+import { AuthAwareHeader } from "@/components/marketing/AuthAwareHeader";
 import type { FeaturedProduce } from "@/types";
 
 const GoteraMap = dynamic(() => import('@/components/shared/GoteraMap'), { ssr: false });
@@ -79,36 +80,7 @@ export async function HomePage() {
 
   return (
     <div className="gotera-texture min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="sticky top-0 z-50 border-b border-[var(--gotera-earth)]/10 bg-[var(--gotera-cream)]/90 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3" aria-label="Gotera home">
-            <GoteraMark />
-            <div>
-              <p className="font-display text-lg font-semibold text-[var(--gotera-bark)]">ጎተራ</p>
-              <p className="font-mono text-[10px] uppercase tracking-[0.35em] text-[var(--gotera-earth)]">Gotera</p>
-            </div>
-          </Link>
-          <nav className="hidden items-center gap-6 text-sm font-semibold text-[var(--gotera-bark)] md:flex">
-            <a className="hover:text-[var(--gotera-green)]" href="#how">
-              How it works
-            </a>
-            <a className="hover:text-[var(--gotera-green)]" href="#produce">
-              Live produce
-            </a>
-            <a className="hover:text-[var(--gotera-green)]" href="#map">
-              Coverage
-            </a>
-          </nav>
-          <div className="flex items-center gap-2">
-            <Link href="/auth/login" className="btn-secondary hidden sm:inline-flex">
-              Log in
-            </Link>
-            <Link href="/auth/register" className="btn-primary">
-              Get started
-            </Link>
-          </div>
-        </div>
-      </header>
+      <AuthAwareHeader />
 
       <main>
         <section className="relative overflow-hidden">
@@ -319,23 +291,5 @@ function Stat({ label, value, hint }: { label: string; value: string | number; h
       <p className="font-accent mt-2 text-3xl font-semibold text-[var(--gotera-green)]">{value}</p>
       <p className="mt-1 text-xs text-[var(--gotera-earth)]">{hint}</p>
     </div>
-  );
-}
-
-function GoteraMark() {
-  return (
-    <svg width="40" height="40" viewBox="0 0 64 64" aria-hidden className="text-[var(--gotera-gold)]">
-      <path
-        d="M18 46 L18 22 Q18 12 32 10 Q46 12 46 22 L46 46 Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinejoin="round"
-      />
-      <path d="M32 10 L32 4" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
-      <path d="M26 18 Q32 14 38 18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-      <path d="M12 40 Q8 34 14 30" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" />
-      <path d="M52 40 Q56 34 50 30" fill="none" stroke="#2d6a4f" strokeWidth="2" strokeLinecap="round" />
-    </svg>
   );
 }

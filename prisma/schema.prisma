@@ -12,6 +12,7 @@ enum Role {
   FARMER
   BUYER
   ADMIN
+  DRIVER
 }
 
 enum OrderStatus {

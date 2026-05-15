@@ -19,6 +19,8 @@ export function roleHomePath(role: Role): string {
       return "/buyer/dashboard";
     case "ADMIN":
       return "/admin/dashboard";
+    case "DRIVER":
+      return "/driver/dashboard";
     default:
       return "/";
   }

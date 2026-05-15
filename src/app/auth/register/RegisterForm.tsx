@@ -21,10 +21,11 @@ function RegisterInner() {
     const r = searchParams.get("role");
     if (r === "farmer") return "FARMER" as const;
     if (r === "buyer") return "BUYER" as const;
+    if (r === "driver") return "DRIVER" as const;
     return "FARMER" as const;
   }, [searchParams]);
 
-  const [role, setRole] = useState<"FARMER" | "BUYER">(initialRole);
+  const [role, setRole] = useState<"FARMER" | "BUYER" | "DRIVER">(initialRole);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -59,6 +60,14 @@ function RegisterInner() {
               .filter(Boolean),
             lat: Number(fd.get("lat")),
             lng: Number(fd.get("lng")),
+          }
+        : role === "DRIVER"
+        ? {
+            ...base,
+            vehicleType: String(fd.get("vehicleType")),
+            plateNumber: String(fd.get("plateNumber")),
+            capacityKg: Number(fd.get("capacityKg")),
+            refrigerated: fd.get("refrigerated") === "true",
           }
         : {
             ...base,
@@ -124,6 +133,14 @@ function RegisterInner() {
         >
           Buyer
         </button>
+        <button 
+          type="button" 
+          disabled={isLoading}
+          className={role === "DRIVER" ? "btn-primary flex-1" : "btn-secondary flex-1"} 
+          onClick={() => setRole("DRIVER")}
+        >
+          Driver
+        </button>
       </div>
       
       <input type="hidden" name="role" value={role} readOnly />
@@ -180,6 +197,30 @@ function RegisterInner() {
           <label className="block text-sm font-semibold text-[var(--gotera-bark)]">
             Lng
             <input name="lng" type="number" step="0.000001" defaultValue="38.76" disabled={isLoading} className={inputClass} />
+          </label>
+        </div>
+      ) : role === "DRIVER" ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm font-semibold text-[var(--gotera-bark)]">
+            Vehicle Type
+            <select name="vehicleType" required disabled={isLoading} className={inputClass}>
+              <option value="motorcycle">Motorcycle</option>
+              <option value="pickup">Pickup Truck</option>
+              <option value="truck">Truck</option>
+              <option value="refrigerated_truck">Refrigerated Truck</option>
+            </select>
+          </label>
+          <label className="block text-sm font-semibold text-[var(--gotera-bark)]">
+            Plate Number
+            <input name="plateNumber" required placeholder="AA-12345" disabled={isLoading} className={inputClass} />
+          </label>
+          <label className="block text-sm font-semibold text-[var(--gotera-bark)]">
+            Capacity (kg)
+            <input name="capacityKg" type="number" required defaultValue="500" disabled={isLoading} className={inputClass} />
+          </label>
+          <label className="flex items-center gap-3 text-sm font-semibold text-[var(--gotera-bark)] sm:col-span-2">
+            <input name="refrigerated" type="checkbox" value="true" disabled={isLoading} className="h-5 w-5 rounded border-[var(--gotera-earth)]/20" />
+            Vehicle has refrigeration
           </label>
         </div>
       ) : (
