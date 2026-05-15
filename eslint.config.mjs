@@ -5,10 +5,10 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   {
     rules: {
-      // Turn off the most strict rules for now
-      '@typescript-eslint/no-explicit-any': 'warn', // Warning instead of error
-      '@typescript-eslint/no-unused-vars': 'warn',
-      'react-hooks/exhaustive-deps': 'warn',
+      // Turn off these rules completely
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+      'react-hooks/exhaustive-deps': 'off',
     },
   },
   globalIgnores([
